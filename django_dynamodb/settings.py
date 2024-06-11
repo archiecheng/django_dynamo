@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import boto3
+from django.contrib.sessions.backends.base import SessionBase, CreateError
+from django.conf import settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,6 +30,26 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# DynamoDB Configuration
+AWS_ACCESS_KEY_ID = 'AKIAYS2NUFD2XRJILLN6'
+AWS_SECRET_ACCESS_KEY = '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'
+AWS_REGION = 'us-west-1'
+
+
+dynamodb = boto3.resource(
+    'dynamodb',
+    region_name=AWS_REGION,
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+)
+
+# 将 Django 会话存储在 DynamoDB 中
+SESSION_ENGINE = 'testmodule.dynamodb_session_backend'
+SESSION_TABLE_NAME = 'django_sessions'
+
+# 如果需要创建会话表，可以在这里设置
+DYNAMODB_SESSIONS_CREATE_TABLE = True
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -36,6 +59,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'testmodule'
 ]
 
 MIDDLEWARE = [
