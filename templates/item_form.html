@@ -1,0 +1,129 @@
+<!-- templates/item_form.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Item Form</title>
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+    </script>
+</head>
+<body>
+    <h1>Create Item</h1>
+    <form id="create-form">
+        {% csrf_token %}
+        <label for="item_id">Item ID:</label><br>
+        <input type="text" id="item_id" name="item_id"><br>
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name"><br>
+        <label for="description">Description:</label><br>
+        <input type="text" id="description" name="description"><br><br>
+        <input type="button" value="Create" onclick="createItem()">
+    </form>
+    
+    <h1>Update Item</h1>
+    <form id="update-form">
+        {% csrf_token %}
+        <label for="update_item_id">Item ID:</label><br>
+        <input type="text" id="update_item_id" name="item_id"><br>
+        <label for="update_name">Name:</label><br>
+        <input type="text" id="update_name" name="name"><br>
+        <label for="update_description">Description:</label><br>
+        <input type="text" id="update_description" name="description"><br><br>
+        <input type="button" value="Update" onclick="updateItem()">
+    </form>
+    
+    <h1>Get Item</h1>
+    <form id="get-form">
+        <label for="get_item_id">Item ID:</label><br>
+        <input type="text" id="get_item_id" name="item_id"><br><br>
+        <input type="button" value="Get" onclick="getItem()">
+    </form>
+    <div id="item-data"></div>
+    
+    <h1>Delete Item</h1>
+    <form id="delete-form">
+        {% csrf_token %}
+        <label for="delete_item_id">Item ID:</label><br>
+        <input type="text" id="delete_item_id" name="item_id"><br><br>
+        <input type="button" value="Delete" onclick="deleteItem()">
+    </form>
+    
+    <script>
+        function createItem() {
+            const formData = new FormData(document.getElementById('create-form'));
+            const data = Object.fromEntries(formData.entries());
+
+            fetch('/testmodule/item/create/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => alert('Item created: ' + JSON.stringify(data)))
+            .catch(error => console.error('Error:', error));
+        }
+
+        function updateItem() {
+            const formData = new FormData(document.getElementById('update-form'));
+            const item_id = formData.get('item_id');
+            const data = Object.fromEntries(formData.entries());
+
+            fetch('/testmodule/item/update/' + item_id + '/', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => alert('Item updated: ' + JSON.stringify(data)))
+            .catch(error => console.error('Error:', error));
+        }
+
+        function getItem() {
+            const item_id = document.getElementById('get_item_id').value;
+
+            fetch('/testmodule/item/' + item_id + '/', {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(data => document.getElementById('item-data').innerText = JSON.stringify(data))
+            .catch(error => console.error('Error:', error));
+        }
+
+        function deleteItem() {
+            const item_id = document.getElementById('delete_item_id').value;
+
+            fetch('/testmodule/item/delete/' + item_id + '/', {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+            })
+            .then(response => response.json())
+            .then(data => alert('Item deleted: ' + JSON.stringify(data)))
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
