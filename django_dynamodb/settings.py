@@ -31,8 +31,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # DynamoDB Configuration
-AWS_ACCESS_KEY_ID = 'AKIAYS2NUFD2XRJILLN6'
-AWS_SECRET_ACCESS_KEY = 'BPTJ1oeYM6f3Ykq7dMX8U7Ia/AOFni6WN3qe7tyS'
+AWS_ACCESS_KEY_ID = 'enter your key id'
+AWS_SECRET_ACCESS_KEY = 'enter your access key'
 AWS_REGION = 'us-west-1'
 
 
